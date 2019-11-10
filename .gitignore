@@ -14,7 +14,8 @@ META-INF
 # Steve Jobs
 .DS_Store
 
-*.jar
+compiler/*.jar
+japicmp/kcompare/**/*.jar
 compiler/javasources
 compiler/ktsources
 gradle/java
