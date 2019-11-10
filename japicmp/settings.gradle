@@ -1,0 +1,12 @@
+rootProject.name = 'japicmp'
+
+include ':jcompare'
+include ':jjar1'
+include ':jjar2'
+include ':kcompare'
+include ':kjar1'
+include ':kjar2'
+include ':kcommon'
+
+includeBuild('../../dcto19-cash-app-baseline')
+includeBuild('../../dcto19-cash-app-latest')

@@ -1,0 +1,68 @@
+buildscript {
+  ext.versions = [
+      'kotlin': '1.3.50',
+      'wire': '3.0.0',
+  ]
+
+  ext.deps = [
+      'wire': [
+          'runtime': "com.squareup.wire:wire-runtime:${versions.wire}",
+      ],
+      'kotlin': [
+          'stdlib': [
+              'jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}",
+          ],
+          'reflect': "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
+      ],
+  ]
+
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+    classpath "com.squareup.wire:wire-gradle-plugin:${versions.wire}"
+  }
+
+  repositories {
+    maven {
+      url 'https://maven.global.square/artifactory/android-public'
+      metadataSources {
+        mavenPom()
+      }
+    }
+  }
+}
+
+subprojects { project ->
+  repositories {
+    //maven {
+    //url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    //}
+    //maven {
+    //  url 'https://maven.global.square/artifactory/snapshots/'
+    //}
+    //mavenLocal()
+
+    maven {
+      url 'https://maven.global.square/artifactory/android-public'
+      metadataSources {
+        mavenPom()
+      }
+    }
+  }
+}
+
+subprojects { subproject ->
+  afterEvaluate {
+    if (subproject.plugins.hasPlugin('org.jetbrains.kotlin.jvm')) {
+      subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions.jvmTarget = "1.8"
+      }
+      subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinTest).all {
+        kotlinOptions.jvmTarget = "1.8"
+      }
+    }
+  }
+}
+
+tasks.wrapper {
+  distributionType = Wrapper.DistributionType.ALL
+}

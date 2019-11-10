@@ -1,0 +1,97 @@
+import me.champeau.gradle.japicmp.JapicmpTask
+
+apply plugin: 'me.champeau.gradle.japicmp'
+
+configurations {
+  common
+}
+
+dependencies {
+  common 'io.reactivex.rxjava2:rxjava:2.2.14'
+  common 'com.google.dagger:dagger:2.25.2'
+}
+
+tasks.withType(JavaExec) {
+  jvmArgs = ['-Xmx8g']
+}
+
+def japicmp = tasks.register("japicmp", JapicmpTask) {
+  oldClasspath = files(
+      fileTree('baseline')
+  )
+  newClasspath = files(
+      fileTree('latest')
+  )
+  onlyModified = true
+  failOnSourceIncompatibility = true
+  failOnModification = true
+  includeSynthetic = true
+  txtOutputFile = file("japi.txt")
+  ignoreMissingClasses = true
+}
+
+def compileBaseline = tasks.register("compileBaseline", GradleBuild) {
+  buildFile = "../../../dcto19-cash-app-baseline/build.gradle"
+  tasks = ['writeAppDebugProjectJarFiles']
+}
+
+def compileLatest = tasks.register("compileLatest", GradleBuild) {
+  buildFile = "../../../dcto19-cash-app-latest/build.gradle"
+  tasks = ['writeAppDebugProjectJarFiles']
+}
+
+def baselineJar = tasks.register("baselineJar", Jar) {
+  archiveBaseName = 'baseline'
+  from fileTree('../../../dcto19-cash-app-baseline/app/build') {
+    include '**/*.class'
+  }
+  destinationDirectory = file('baseline')
+}
+
+def latestJar = tasks.register("latestJar", Jar) {
+  archiveBaseName = 'latest'
+  from fileTree('../../../dcto19-cash-app-latest/app/build') {
+    include '**/*.class'
+  }
+  destinationDirectory = file('latest')
+}
+
+def copyBaselineJars = tasks.register("copyBaselineJars") {
+  doLast {
+    copy {
+      from files(parse("../../dcto19-cash-app-baseline/jars.txt"))
+      into file('baseline')
+      eachFile { FileCopyDetails fileCopyDetails ->
+        def path = fileCopyDetails.file.path
+        def searchToken = "dcto19-cash-app-baseline/"
+        def subpath = path.substring(path.indexOf(searchToken) + searchToken.length()).replace('/', '_')
+        fileCopyDetails.name = subpath
+      }
+    }
+  }
+}
+
+def copyLatestJars = tasks.register("copyLatestJars") {
+  doLast {
+    copy {
+      from files(parse("../../dcto19-cash-app-latest/jars.txt"))
+      into file('latest')
+      eachFile { FileCopyDetails fileCopyDetails ->
+        def path = fileCopyDetails.file.path
+        def searchToken = "dcto19-cash-app-latest/"
+        def subpath = path.substring(path.indexOf(searchToken) + searchToken.length()).replace('/', '_')
+        fileCopyDetails.name = subpath
+      }
+    }
+  }
+}
+
+baselineJar.configure { it.dependsOn(compileBaseline) }
+latestJar.configure { it.dependsOn(compileLatest) }
+copyBaselineJars.configure { it.dependsOn(compileBaseline) }
+copyLatestJars.configure { it.dependsOn(compileLatest) }
+japicmp.configure { it.dependsOn(baselineJar, latestJar, copyBaselineJars, copyLatestJars) }
+
+def parse(String filename) {
+  return new File(filename).readLines()
+}

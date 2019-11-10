@@ -1,0 +1,4 @@
+rootProject.name = 'gradle'
+
+include ':java'
+include ':kotlin'

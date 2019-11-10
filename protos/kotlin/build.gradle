@@ -1,0 +1,29 @@
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.squareup.wire'
+
+sourceSets {
+  main.java.srcDirs += "${buildDir}/generated/source/wire/"
+}
+
+dependencies {
+  implementation deps.kotlin.stdlib.jdk8
+  implementation deps.wire.runtime
+}
+
+wire {
+  sourcePath 'com.squareup.protos:all-protos:20191106.222255'
+
+  rules = file('prune.txt')
+
+  kotlin {
+    excludes = [
+        "squareup.franklin.app.AppService",
+        "squareup.franklin.investing.InvestingService",
+        "squareup.franklin.lending.LendingAppServiceClient"
+    ]
+  }
+}
+
+tasks.withType(Test) {
+  outputs.upToDateWhen { false }
+}

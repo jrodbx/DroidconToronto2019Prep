@@ -1,0 +1,8 @@
+rootProject.name = 'protos'
+
+include ':crawler'
+include ':java'
+include ':java-build'
+include ':kotlin'
+include ':kotlin-build'
+include ':mixed-build'

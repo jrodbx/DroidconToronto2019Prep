@@ -1,0 +1,24 @@
+import me.champeau.gradle.japicmp.JapicmpTask
+
+apply plugin: 'me.champeau.gradle.japicmp'
+
+configurations {
+  baseline
+  latest
+}
+
+dependencies {
+  baseline project(':jjar1')
+  latest project(':jjar2')
+}
+
+tasks.register("japicmp", JapicmpTask) {
+  oldClasspath = configurations.baseline
+  newClasspath = configurations.latest
+  onlyModified = true
+  onlyBinaryIncompatibleModified = true
+  failOnSourceIncompatibility = true
+  failOnModification = true
+  includeSynthetic = true
+  txtOutputFile = file("$buildDir/reports/japi.txt")
+}

@@ -1,0 +1,28 @@
+# IntelliJ
+.idea
+*.iml
+captures/
+
+# Gradle
+.gradle
+gradlew.bat
+build/
+local.properties
+reports
+META-INF
+
+# Steve Jobs
+.DS_Store
+
+*.jar
+compiler/javasources
+compiler/ktsources
+gradle/java
+gradle/kotlin
+protos/crawler_out
+protos/java-build/src
+protos/java-build/javaout
+protos/kotlin-build/src
+protos/kotlin-build/ktout
+protos/mixed-build/src
+protos/mixed-build/mixedout

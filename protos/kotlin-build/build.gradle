@@ -1,0 +1,6 @@
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+dependencies {
+  implementation deps.wire.runtime
+  implementation deps.kotlin.stdlib.jdk8
+}

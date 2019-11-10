@@ -1,0 +1,24 @@
+apply plugin: 'java-library'
+apply plugin: 'com.squareup.wire'
+
+sourceSets {
+  main.java.srcDirs += "${buildDir}/generated/source/wire/"
+}
+
+dependencies {
+  api deps.wire.runtime
+}
+
+wire {
+  sourcePath 'com.squareup.protos:all-protos:20191106.222255'
+
+  rules = file('prune.txt')
+
+  java {
+    excludes = [
+        "squareup.franklin.app.AppService",
+        "squareup.franklin.investing.InvestingService",
+        "squareup.franklin.lending.LendingAppServiceClient"
+    ]
+  }
+}
