@@ -30,14 +30,13 @@ def japicmp = tasks.register("japicmp", JapicmpTask) {
   ignoreMissingClasses = true
 }
 
-def compileBaseline = tasks.register("compileBaseline", GradleBuild) {
-  buildFile = "../../../dcto19-cash-app-baseline/build.gradle"
-  tasks = ['writeAppDebugProjectJarFiles']
+def compileBaseline = tasks.register("compileBaseline") {
+  dependsOn gradle.includedBuild("dcto19-cash-app-baseline").task(":app:writeAppDebugProjectJarFiles")
 }
 
-def compileLatest = tasks.register("compileLatest", GradleBuild) {
-  buildFile = "../../../dcto19-cash-app-latest/build.gradle"
-  tasks = ['writeAppDebugProjectJarFiles']
+def compileLatest = tasks.register("compileLatest") {
+  dependsOn gradle.includedBuild("dcto19-cash-app-latest").task(":app:writeAppDebugProjectJarFiles")
+
 }
 
 def baselineJar = tasks.register("baselineJar", Jar) {
